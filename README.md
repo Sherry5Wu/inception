@@ -97,4 +97,23 @@ CMD ["executable", "param1", "param2"]
 
 7. `CMD / ENTRYPOINT` – Last, as it defines the default behavior.
 
- 
+Commands:
+    FROM
+
+    RUN
+
+    COPY
+
+    WORKDIR
+
+    ENTRYPOINT
+
+    CMD
+
+    ENV
+
+    EXPOSE
+
+    VOLUME
+
+must be written in uppercase (by convention and practice).  But technically...Docker does not care about case — it’s not case-sensitive.This means run, Run, or RUN will work the same.<br>
