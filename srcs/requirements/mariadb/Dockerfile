@@ -16,13 +16,13 @@ RUN apk update && \
 #   * /run/mysqld: For PID and socket files;
 #   * /var/lib/mysql: Where the database data will be stored
 # chown: Sets correct permissions for the MariaDB process(which runs as mysql user)
-RUN mkdir -p /run/mysqld && \
-    mkdir -p /var/lib/mysql && \
-    chown -R mysql:mysql /var/lib/mysql /run/mysqld
-
-# Initialize the MariaDB database system (create necessary tables and files)
-# using the mysql user
-RUN mysql_install_db --user=mysql -- datadir=/var/lib/mysql
+# mysql_install_db: Initialize the MariaDB database system (create necessary
+# tables and files) using the mysql user
+# set -eux: this is for debugging.(see more explainatin in README.md)
+RUN set -eux; \
+    mkdir -p /run/mysqld  /var/lib/mysql; \
+    chown -R mysql:mysql /var/lib/mysql /run/mysqld; \
+    mysql_install_db --user=mysql -- datadir=/var/lib/mysql
 
 # Copy a custom MariaDB configuration file into the container
 COPY ./conf/my_mariadb-server.cnf /etc/my.cnf.d/my-mariadb-server.cnf

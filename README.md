@@ -50,11 +50,11 @@ Core Functions
 
 
 
-## How to write Dockerfile?
+## Dockerfile?
 
 Writing a Dockerfile is all about defining how to build a Docker image for your application.Here’s a simple breakdown, followed by an example:
 
-🧱 Basic Structure of a Dockerfile
+### 1. Basic Structure of a Dockerfile
 ```
 # 1. Base image
 FROM <base-image>
@@ -81,39 +81,179 @@ ENV VAR_NAME=value
 CMD ["executable", "param1", "param2"]
 ```
 
-✅ Logical (Recommended) Order
+### 2. Logical (Recommended) Order
 
-1. `FROM` – Always first. Sets the base image.
+    1. `FROM` – Always first. Sets the base image.
 
-2. `LABEL / ENV` – Optional metadata or configuration.
+    2. `LABEL / ENV` – Optional metadata or configuration.
 
-3. `WORKDIR` – Before any file operations; sets the context for COPY and RUN.
+    3. `WORKDIR` – Before any file operations; sets the context for COPY and RUN.
 
-4. `COPY / ADD` – Copy app files after WORKDIR is set.
+    4. `COPY / ADD` – Copy app files after WORKDIR is set.
 
-5. `RUN` – Install dependencies. Run commands.
+    5. `RUN` – Install dependencies. Run commands.
 
-6. `EXPOSE` – Informational. Comes after setup.
+    6. `EXPOSE` – Informational. Comes after setup.
 
-7. `CMD / ENTRYPOINT` – Last, as it defines the default behavior.
+    7. `CMD / ENTRYPOINT` – Last, as it defines the default behavior.
 
-Commands:
-    FROM
-
-    RUN
-
-    COPY
-
-    WORKDIR
-
-    ENTRYPOINT
-
-    CMD
-
-    ENV
-
-    EXPOSE
-
-    VOLUME
-
+### 3. Commands:
+`FROM`: Specifies the base image to use (must be the first non-comment instruction)<br>
+`RUN`: Runs a command in a new container and creates a new image layer<br>
+`COPY`: Copies files/folders from your local machine into the image<br>
+`ADD`: Similar to COPY, but supports URLs and extracting archives<br>
+`CMD`: Sets the default command to run when the container starts<br>
+`ENTRYPOINT`: Sets the main executable, allowing CMD to act as its default arguments<br>
+`ENV`: Sets an environment variable<br>
+`WORKDIR`: Sets the working directory for subsequent commands<br>
+`EXPOSE`: Documents the port the container listens on (informational only)<br>
+`ARG`: Defines build-time variables<br>
+`LABEL`: Adds metadata to the image (e.g., maintainer info)<br>
+`USER`: Sets the user under which to run the container processes<br>
+`VOLUME`: Declares mount points for external storage<br>
 must be written in uppercase (by convention and practice).  But technically...Docker does not care about case — it’s not case-sensitive.This means run, Run, or RUN will work the same.<br>
+
+Compare CMD and ENTRYPOINT<br>
+|  Feature   |         ENTRYPOINT             |                  CMD                  |
+|:-----------|:-------------------------------|:--------------------------------------|
+| Purpose    | Main process                   | Default arguments                     |
+| Override   | Harder to override             | Easy to override via docker run       |
+| Syntax     | Usually ["executable", "arg"]  | ["arg1", "arg2"]                      |
+
+Example 1, just use `CMD`<br>
+```bash
+FROM alpine
+CMD ["echo", "Hello from CMD"]
+```
+Run,
+```bash
+docker run myimage echo "Hi there"
+```
+Output is,
+```bash
+Hi there
+```
+`CMD` is overrided by`docker run`<br>
+
+Example 2, just use `ENTRYPOINT`<br>
+```bash
+FROM alpine
+ENTRYPOINT ["echo", "This is ENTRYPOINT:"]
+```
+Run,
+```bash
+docker run myimage "Hello"
+```
+Output is,
+```bash
+This is ENTRYPOINT: Hello
+```
+`ENTRYPOINT` cant be overrided by`docker run`, but just added the argument after it<br>
+
+Example 3, use both `CMD` and `ENTRYPOINT`<br>
+```bash
+FROM alpine
+ENTRYPOINT ["echo", "Message:"]
+CMD ["Default message"]
+```
+Run,
+```bash
+docker run myimage
+```
+Output is,
+```bash
+Message: Default message
+```
+Run,
+```bash
+docker run myimage "Custom message"
+```
+Output is,
+```bash
+Message: Custom message
+```
+In this case, `CMD` is treated as the default argument to `ENTRYPOINT`, rather than the command itself.<br>
+
+### 4. Syntax Tips
+Always use `--no-cache` when installing packages in Alpine<br>
+Use `\` to split long `RUN` commands across multiple lines<br>
+Keep `COPY/ADD` close to RUN commands that use the copied files<br>
+Order matters: changing earlier instructions will invalidate Docker cache for all later steps<br>
+
+### 5. How a Dockerfile is Exectued
+When you run:
+```sh
+docker build -t my-image .
+```
+Docker reads and executes the Dockerfile line-by-line to build a new image.<br>
+
+1. Dockerfile is Parsed <br>
+Docker reads the Dockerfile top to bottom. Each instruction (`FROM`, `RUN`, `COPY`, etc.) creates a layer in the image (except some special cases like `ARG`, `ENV`, `LABEL`).
+
+2. Base Image is Pulled<br>
+```sh
+FROM alpine:3.20
+```
+Docker pulls this base image from Docker Hub (if not already in local cache). This is the starting point of the image.<br>
+
+3. Instructions are Executed One by One<br>
+Each instruction creates a new intermediate container, runs the command inside that container, and then commits the result as a new image layer.<br>
+
+4.  Caching Is Used<br>
+Docker caches each layer. If nothing has changed in an instruction or its context, Docker will reuse the cached result to speed up builds.<br>
+So, order matters — changing a line early in the Dockerfile can invalidate the cache for all subsequent lines.<br>
+
+5. Final Image Is Built<br>
+After all instructions are executed, Docker packages the final state of the last container as an image and tags it (e.g., my-image:latest).<br>
+
+
+### 5. set -eux
+set -eux is a commonly used command combination in shell scripts to improve the transparency, robustness, and debuggability of script execution. It is also very useful in the RUN command of a Dockerfile.<br>
+You will often see a more complete version written as:<br>
+    -e: Exit the script immediately if any command fails (i.e., returns a non-zero exit status).<br>
+    -u: Exit the script with an error if any unset (undefined) variable is used (helps catch typos in variable names).<br>
+    -x: Print each command before executing it (useful for debugging).<br>
+
+## docker-compose.yml
+
+### 1. What is docker-compose.yml?
+docker-compose.yml is a configuration file written in YAML format, used by Docker Compose to define and manage multi-container Docker applications. It's like a blueprint for setting up an entire stack of services with a single command.<br>
+
+### 2. What is it used for?
+1. Define multiple services (e.g. NGINX, MariaDB, WordPress)<br>
+2. Specify how each service should run — image to use, ports, environment variables, mounted volumes, etc.<br>
+3. Set up dependencies between services, so one container waits for another to be ready<br>
+4. Automatically create Docker networks and volumes to allow containers to talk to each other and persist data<br>
+
+Exmaple:<br>
+
+```yaml
+version: "3.8"
+
+services:
+  web:
+    image: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./conf/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - app
+
+  app:
+    image: myapp
+    environment:
+      - APP_ENV=production
+```
+In this example:<br>
+ * `web` and `app` are two services<br>
+ * `web` uses NGINX and maps port 80<br>
+ * `web` depends on `app`<br>
+ * A configuration file is mounted into the `web` container<br>
+ * `app` has an environment variable set<br>
+
+### 3. How to use
+You can start the entire application stack with a single command:<br>
+```bash
+docker-compose up -d
+```
