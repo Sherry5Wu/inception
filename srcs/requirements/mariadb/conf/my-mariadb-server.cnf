@@ -64,4 +64,4 @@ innodb_log_file_size    = 256M  #larger redo logs can improve write performance.
 innodb_flush_log_at_trx_commit = 1
 
 [client]
-defalut-character-set   = utf8mb4
+default-character-set   = utf8mb4

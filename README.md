@@ -1,6 +1,5 @@
 # inception
 
-
 ## What is NGINX?
 
 NGINX is a versatile, high-performance server primarily used as a web server, reverse proxy, load
@@ -48,11 +47,29 @@ Core Functions
       NGINX can cache responses from backend services. This not only speeds up content delivery but
       also reduces the load on backend servers by serving cached responses for subsequent requests.
 
+## The workflow
+```sql
+Build Time:
+  Dockerfile:
+    ↓
+  Copies config + entrypoint
+    ↓
+  Sets up image
 
+Run Time:
+  Container starts
+    ↓
+  entrypoint.sh executes
+    ↓
+  my-mariadb-server.cnf configures mysqld
+    ↓
+  mysqld starts (via CMD or exec "$@")
+```
 
 ## Dockerfile?
 
-Writing a Dockerfile is all about defining how to build a Docker image for your application.Here’s a simple breakdown, followed by an example:
+Writing a Dockerfile is all about defining how to build a Docker image for your application.
+It is like a blueprint. Here’s a simple breakdown, followed by an example:
 
 ### 1. Basic Structure of a Dockerfile
 ```
@@ -257,3 +274,137 @@ You can start the entire application stack with a single command:<br>
 ```bash
 docker-compose up -d
 ```
+
+## Some Shell functions
+
+In shell scripting, commands return an exit code, not true/false like in other languages.<br>
+    - Exit code 0 → success → true
+    - Exit code 1 (or other non-zero) → failure → false
+
+### 1. until ...; do ...; done
+This is a Shell loop that works like this:<br>
+    -- It runs the command after until<br>
+    -- If the command fails (i.e., returns non-zero exit status), then the body inside do ... done will execute<br>
+    --This continues looping until the command succeeds<br>
+
+In simple words:<br>
+    -- "Keep doing something until the condition becomes true (success)."<br>
+
+### 2. while ...; do ...; done
+syntax: <br>
+```shell
+while <condition>; do
+    # commands to run while the condition is true
+done
+```
+How it works:<br>
+    1.The condition (usually a command or expression) is evaluated.<br>
+    2.If the exit status is 0 (i.e., the command succeeds, which means “true” in shell terms), then the block inside do ... done runs.<br>
+    3.After running the block, it goes back and checks the condition again.<br>
+    4.This repeats as long as the condition stays true.<br>
+    5.When the condition returns a non-zero exit code (i.e., fails or is “false”), the loop stops.<br>
+
+Example<br>
+```shell
+counter=1
+
+while [ $counter -le 5 ]; do
+    echo "Counter is $counter"
+    counter=$((counter + 1))
+done
+```
+Output:<br>
+```shell
+Counter is 1
+Counter is 2
+Counter is 3
+Counter is 4
+Counter is 5
+```
+Key Difference in One Line<br>
+|: Syntax	     |: Loop runs when...               |:  Ends when...                     |
+|--------------|----------------------------------|------------------------------------|
+| while loop   | Condition is true (exit code 0)  |   Condition is false (non-zero)    |
+|--------------|----------------------------------|------------------------------------|
+| until loop   | Condition is false (non-zero)    |   Condition is true (exit code 0)  |
+
+### 3. if
+#### 3.1 syntax<br>
+```shell
+if [ condition ]; then
+    # commands to run if condition is true
+fi
+```
+```shell
+if [ condition ]; then
+    # true block
+else
+    # false block
+fi
+```
+```shell
+if [ condition1 ]; then
+    # commands if condition1 is true
+elif [ condition2 ]; then
+    # commands if condition2 is true
+else
+    # commands if none are true
+fi
+```
+#### 3.2 Common Conditional Operators<br>
+Integer comparisons:
+| Operator | Meaning               |
+| -------- | --------------------- |
+| `-eq`    | equal to              |
+| `-ne`    | not equal to          |
+| `-lt`    | less than             |
+| `-le`    | less than or equal to |
+| `-gt`    | greater than          |
+| `-ge`    | greater than or equal |
+
+Example:<br>
+```shell
+if [ $x -gt 10 ]; then echo "x > 10"; fi
+```
+String comparisons:
+| Operator | Meaning             |
+| -------- | ------------------- |
+| `=`      | equal to            |
+| `!=`     | not equal to        |
+| `-z`     | string is empty     |
+| `-n`     | string is not empty |
+
+Example:<br>
+```shell
+if [ "$name" = "admin" ]; then echo "Welcome"; fi
+```
+File checks:
+| Operator  | Meaning                |
+| --------- | ---------------------- |
+| `-e file` | file exists            |
+| `-f file` | file is a regular file |
+| `-d file` | file is a directory    |
+| `-r file` | file is readable       |
+| `-w file` | file is writable       |
+| `-x file` | file is executable     |
+
+Example:<br>
+```shell
+if [ -f /etc/passwd ]; then echo "Found passwd file"; fi
+```
+#### 3.3 Notes
+Always add spaces around the brackets:
+```shell
+if [ "$var" = "hello" ]; then ...
+```
+❌ Wrong: [ `"$var"="hello"` ]<br>
+✅ Right: [ `"$var" = "hello"` ]<br>
+
+Quote variables to prevent word-splitting or errors<br>
+
+There must be spaces around the square brackets and inside them:
+```shell
+if [ $x -gt 3 ]; then echo "x is greater than 3"; fi
+```
+❌ Wrong: [`$x -gt 3`]<br>
+✅ Right: [ `$x -gt 3` ]<br>

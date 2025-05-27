@@ -10,7 +10,7 @@ FROM alpine:3.20
 # 3. "mariadb" is the server;
 #    "mariadb-client" is the client;
 RUN apk update && \
-    apk add --no -cache mariadb mariadb-client
+    apk add --no-cache mariadb mariadb-client
 
 # Prepares the directories MariaDB needs to operate:
 #   * /run/mysqld: For PID and socket files;
