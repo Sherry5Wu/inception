@@ -1,53 +1,65 @@
 # inception
 
-## What is NGINX?
+## NGINX
 
-NGINX is a versatile, high-performance server primarily used as a web server, reverse proxy, load
-balancer, and HTTP cache. It plays a crucial role in modern web infrastructure due to its
-efficiency and scalability. Here’s a detailed explanation of what NGINX is and why it is so popular:
+NGINX is a versatile, high-performance server primarily used as a web server, reverse proxy, load balancer, and HTTP cache. It plays a crucial role in modern web infrastructure due to its efficiency and scalability. Here’s a detailed explanation of what NGINX is and why it is so popular:<br>
 
-Core Functions
+Core Functions<br>
 
     1. Web Server:
 
     * Static File Serving:
-      NGINX is highly efficient at serving static content such as HTML, CSS, JavaScript, images,
-      and videos, making it ideal for websites that need to quickly load resources.
+      NGINX is highly efficient at serving static content such as HTML, CSS, JavaScript, images, and videos, making it ideal for websites that need to quickly load resources.
 
     * Dynamic Content Handling:
-      While NGINX itself does not directly process dynamic content (e.g., PHP, Ruby, or Python
-      ode), it is designed to work seamlessly with backend application servers (like PHP-FPM, Node.
-      js, etc.) to deliver dynamic web applications.
+      While NGINX itself does not directly process dynamic content (e.g., PHP, Ruby, or Pythonode), it is designed to work seamlessly with backend application servers (like PHP-FPM, Node.js, etc.) to deliver dynamic web applications.
 
     2. Reverse Proxy:
 
     * Request Forwarding:
-      As a reverse proxy, NGINX receives client requests and forwards them to one or more backend
-      servers. This setup helps to offload tasks such as SSL/TLS termination (decrypting HTTPS
-      traffic), caching responses, or compressing content before sending it back to the client.
+      As a reverse proxy, NGINX receives client requests and forwards them to one or more backend servers. This setup helps to offload tasks such as SSL/TLS termination (decrypting HTTPS traffic), caching responses, or compressing content before sending it back to the client.
 
     * Improved Security and Load Management:
-      By acting as a shield between the public internet and internal servers, NGINX can provide
-      additional layers of security, manage traffic spikes, and facilitate scalability.
+      By acting as a shield between the public internet and internal servers, NGINX can provide additional layers of security, manage traffic spikes, and facilitate scalability.
 
     3. Load Balancer:
 
     * Distributing Traffic:
-      NGINX can distribute incoming network traffic across multiple backend servers using various
-      algorithms (round-robin, least connections, IP-hash, etc.). This ensures that no single
-      server bears too much load, which improves overall system reliability and user experience.
+      NGINX can distribute incoming network traffic across multiple backend servers using various algorithms (round-robin, least connections, IP-hash, etc.). This ensures that no single server bears too much load, which improves overall system reliability and user experience.
 
     * Fault Tolerance:
-      In the event that one server goes down, NGINX can redirect traffic to healthy servers,
-      thereby increasing the robustness of the infrastructure.
+      In the event that one server goes down, NGINX can redirect traffic to healthy servers, thereby increasing the robustness of the infrastructure.
 
     4.HTTP Cache:
 
     * Caching Content:
-      NGINX can cache responses from backend services. This not only speeds up content delivery but
-      also reduces the load on backend servers by serving cached responses for subsequent requests.
+      NGINX can cache responses from backend services. This not only speeds up content delivery but also reduces the load on backend servers by serving cached responses for subsequent requests.
 
-## The workflow
+## WordPress
+WordPress is a free and open-source content management system (CMS) that allows you to create and manage websites easily, even without deep technical knowledge.<br>
+Key Features of WordPress:<br>
+    - User-Friendly Interface: Write, edit, and manage content through an intuitive dashboard.<br>
+    - Themes & Plugins: Thousands of free and premium themes for design, and plugins to extend functionality (e.g., SEO, contact forms, security).<br>
+    - Customizable: Full access to the code for developers who want to build custom themes or plugins.<br>
+    - Open Source: Built with PHP and MySQL, licensed under the GPL.<br>
+    - Community Support: Massive global community, with extensive documentation and support forums.<br>
+
+### What is PHP_FPM
+  - PHP-FPM stands for FastCGI Process Manager.<br>
+  - It’s a specialized PHP interpreter designed to handle multiple concurrent PHP requests efficiently.<br>
+  - PHP-FPM runs as a separate service/process pool that manages PHP workers waiting to process requests.<br>
+
+Benefits of PHP-FPM vs plain PHP<br>
+| Feature                      | PHP CLI (`php`)                 | PHP-FPM                                           |
+| ---------------------------- | ------------------------------- | ------------------------------------------------- |
+| Intended Use                 | Command line scripts, cron jobs | Web server environment                            |
+| Handles Multiple Requests    | No (one script at a time)       | Yes (multiple PHP workers)                        |
+| Performance                  | Limited concurrency             | High concurrency & process management             |
+| Integration with Web Servers | Minimal                         | Full FastCGI support for NGINX/Apache             |
+| Process Management           | None                            | Manages pools, worker lifetimes, dynamic spawning |
+
+
+## The Workflow
 ```sql
 Build Time:
   Dockerfile:
@@ -408,3 +420,4 @@ if [ $x -gt 3 ]; then echo "x is greater than 3"; fi
 ```
 ❌ Wrong: [`$x -gt 3`]<br>
 ✅ Right: [ `$x -gt 3` ]<br>
+

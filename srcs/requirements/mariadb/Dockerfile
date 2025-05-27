@@ -1,6 +1,7 @@
 # Use official alpine 3.20 as image
 # require the penultimate stable version from subject
-FROM alpine:3.20
+# https://alpinelinux.org/releases/
+FROM alpine:3.20.6
 
 # 1. updates Alpine's packing index
 # 2. Installs MariaDB server and client with no caching(--no -cashe flag is
