@@ -58,8 +58,120 @@ Benefits of PHP-FPM vs plain PHP<br>
 | Integration with Web Servers | Minimal                         | Full FastCGI support for NGINX/Apache             |
 | Process Management           | None                            | Manages pools, worker lifetimes, dynamic spawning |
 
+## Adminer
+Adminer is a lightweight, full-featured database management tool written in a single PHP file. It’s used to interact with databases via a web interface, much like phpMyAdmin, but it’s simpler, faster, and more portable.<br>
 
-## The Workflow
+Key Features:
+  * Supports multiple databases: MySQL, PostgreSQL, SQLite, MS SQL, Oracle, MongoDB (via plugins), and others.<br>
+  * Single-file deployment: Just one PHP file to upload and run.<br>
+  * Secure by design: Minimal footprint, CSRF protection, and session-based login.<br>
+  * User-friendly UI: Clean and fast interface to manage tables, run queries, edit data, and manage users.<br>
+  * Customizable via plugins: Extendable with additional functionality as needed.<br>
+
+## Redis
+Redis (REmote DIctionary Server) is a fast, in-memory data store used as a database, cache, and message broker. It's widely used in modern applications where performance and scalability are crucial.<br>
+
+What Is Redis Used For?
+| Use Case                | Description                                               |
+| ----------------------- | --------------------------------------------------------- |
+| **Caching**             | Store frequently accessed data to reduce DB load.         |
+| **Session Storage**     | Store user session data in web apps.                      |
+| **Message Queues**      | Build pub/sub or task queues (e.g., with Celery or Bull). |
+| **Real-Time Analytics** | Track counters or metrics in real-time.                   |
+| **Leaderboard Systems** | Use sorted sets for game scores, rankings, etc.           |
+
+## FTP Server
+File transfer protocol server (commonly known as FTP Server) is computer software that facilitates the secure exchange of files over a TCP/IP network. It runs the file transfer protocol (FTP), a standard communication protocol that operates at the network level, to establish a secure connection between the devices in a client-server architecture and efficiently transmit data over the internet.<br>
+
+### Pure-FTPd
+Pure-FTPd is a free, open-source, and secure FTP server software designed for Unix-like operating systems (Linux, *BSD, macOS, etc.). It aims to be simple, efficient, and secure, and is often used in environments where ease of configuration and security are important.
+Recommended for Docker + WordPress.<br>
+🟢 Lightweight and secure<br>
+🟢 Easy TLS/SSL setup<br>
+🟢 Virtual users support<br>
+🟢 Well-maintained and commonly used in containerized environments<br>
+🟢 Readily available as a Docker image (stilliard/pure-ftpd)<br>
+🔴 Doesn't include a web UI (CLI or config-based)<br>
+Best for: Simple, secure, and scriptable FTP container setups.<br>
+
+✅ Why Pure-FTPd?
+  * Works well in Docker<br>
+  * Secure by default<br>
+  * Can limit access to only the WordPress volume<br>
+  * Supports TLS and passive mode (important for production)<br>
+
+#### Passive mode
+Passive mode (PASV) is one of the two modes in FTP used to establish data connections between the client and server (the other is active mode). It’s particularly important when the client is behind a firewall or NAT — like in most modern setups (including Docker or home networks).<br>
+
+##### Two Connections in FTP:<br>
+FTP uses two TCP connections:
+  1. Control connection – on port 21, used for commands like login, list, upload, download.<br>
+  2. Data connection – used for transferring files or directory listings.<br>
+How the data connection is opened differs between active and passive mode.<br>
+
+##### Passive Mode: Client Connects to Server for Data
+  * The client initiates both the control and data connections.<br>
+  * The server tells the client which port to connect to for data.<br>
+  * Typically used behind firewalls and NAT because inbound connections to the client are blocked, but outbound ones are allowed.<br>
+
+##### Flow
+```pgsql
+1. Client connects to server:21 (control)
+2. Client sends PASV command
+3. Server replies with: "Connect to me on IP:x,y,z,w and port P"
+4. Client connects to server:port (data)
+5. Data (like file or listing) is transferred
+```
+##### In Docker (or cloud environments):
+  * Servers (like Pure-FTPd) must declare a passive port range (e.g., 30000–30042).<br>
+  * You expose these in `docker-compose.yml` or `-p` flags.<br>
+  * You configure the server to advertise the public IP and port.<br>
+
+## Netdata
+Netdata is a real-time performance monitoring and troubleshooting tool for systems and applications. It's open-source and designed to be lightweight, easy to install, and visually rich, making it ideal for both system admins and developers who want instant insights into their infrastructure.<br>
+
+What Netdata Does:
+  * Monitors: CPU, memory, disks, network, services, applications (like MySQL, NGINX, Docker, etc.), and more.<br>
+  * Visualizes: Beautiful, interactive dashboards with live updates (per second or faster).<br>
+  * Alerts: Comes with pre-configured health alarms and supports custom alert rules.<br>
+  * Troubleshoots: Helps you identify bottlenecks, misbehaving processes, or system issues quickly.<br>
+
+## lifecycle of a Docker image and container
+
+### Build Time: (Happens once, when the image is built)
+This is when Dockerfile instructions are executed to assemble an image.<br>
+
+#### Flow
+1. Dockerfile starts<br>
+    FROM, COPY, RUN, etc. instructions are processed.<br>
+2. Copies config + entrypoint<br>
+    COPY ./entrypoint.sh /usr/local/bin/<br>
+    COPY ./my-mariadb-server.cnf /etc/mysql/conf.d/<br>
+3. Image is built<br>
+    Final image is created with your app + config + entrypoint baked in.<br>
+    Tagged, ready for docker run.<br>
+
+At this point, nothing is "running" yet — it's just building the image layer by layer.<br>
+
+### Run Time: (Happens every time the container starts)
+This is when you start a container from that image (docker run, docker-compose up, etc.).<br>
+#### Flow
+1. Container starts<br>
+    Docker launches the container based on the image.<br>
+2. entrypoint.sh executes<br>
+    The image defines ENTRYPOINT ["entrypoint.sh"], so this script runs first.<br>
+3. Custom configs like my-mariadb-server.cnf are picked up<br>
+    entrypoint.sh or mysqld reads /etc/mysql/conf.d/my-mariadb-server.cnf.<br>
+    The script may also set env vars, create users, init DBs, etc.<br>
+4. mysqld starts<br>
+    The final command in entrypoint.sh usually ends with:<br>
+    ```sh
+    exec "$@"
+    ```
+    This passes control to the CMD (e.g., CMD ["mysqld"]), launching the DB server.<br>
+
+
+### Summary Diagram
 ```sql
 Build Time:
   Dockerfile:
