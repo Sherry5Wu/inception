@@ -421,3 +421,18 @@ if [ $x -gt 3 ]; then echo "x is greater than 3"; fi
 ❌ Wrong: [`$x -gt 3`]<br>
 ✅ Right: [ `$x -gt 3` ]<br>
 
+### Parameter Expansion
+Parameter expansion is a feature in Bash that allows you to manipulate and validate variable values when using them.<br>
+The basic syntax is:
+```bash
+${VARIABLE}
+```
+Common Forms of Parameter Expansion (with examples)
+| Syntax            | Meaning                                          | Example                      |
+| ----------------- | ------------------------------------------------ | ---------------------------- |
+| `${VAR}`          | Get the value of `VAR`                           | `echo ${NAME}`               |
+| `${VAR:-default}` | Use `default` if `VAR` is unset or empty         | `echo ${NAME:-Anonymous}`    |
+| `${VAR:=default}` | Assign `default` to `VAR` if it's unset or empty | `echo ${NAME:=Default}`      |
+| `${VAR:?error}`   | Show error and exit if `VAR` is unset or empty   | `: ${NAME:?Please set NAME}` |
+| `${VAR:+alt}`     | Use `alt` **only if** `VAR` is set and not empty | `echo ${NAME:+Set}`          |
+
