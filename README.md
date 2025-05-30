@@ -355,10 +355,10 @@ You will often see a more complete version written as:<br>
     -u: Exit the script with an error if any unset (undefined) variable is used (helps catch typos in variable names).<br>
     -x: Print each command before executing it (useful for debugging).<br>
 
-## docker-compose.yml
+## Docker Compose
 
-### 1. What is docker-compose.yml?
-docker-compose.yml is a configuration file written in YAML format, used by Docker Compose to define and manage multi-container Docker applications. It's like a blueprint for setting up an entire stack of services with a single command.<br>
+### 1. What is docker compose?
+Docker Compose is a tool that helps you define and run multi-container Docker applications. It uses a YAML file (`docker-compose.yml`) to configure your application's services, networks, and volumes, making it easier to orchestrate complex setups with multiple containers (like a web server, database, and reverse proxy).<br>
 
 ### 2. What is it used for?
 1. Define multiple services (e.g. NGINX, MariaDB, WordPress)<br>
@@ -366,34 +366,103 @@ docker-compose.yml is a configuration file written in YAML format, used by Docke
 3. Set up dependencies between services, so one container waits for another to be ready<br>
 4. Automatically create Docker networks and volumes to allow containers to talk to each other and persist data<br>
 
-Exmaple:<br>
+### 3. What should a docker-compose.yml file contain?
+A `docker-compose.yml` file typically includes the following main sections:
 
+#### 1. `version:`
+Specifies the Compose file format version.
 ```yaml
-version: "3.8"
-
+version: '3.8'  # or '3', '2.4', etc., depending on your Docker version
+```
+#### 2. `services:`
+Defines the different containers (services) that make up your application.<br>
+Each service has options like:
+  * `image`: Docker image to use.
+  * `build`: Path to Dockerfile to build a custom image.
+  * `ports`: Host-to-container port mapping.
+  * `volumes`: Mount volumes for persistence or code sharing.
+  * `environment`: Environment variables.
+  * `depends_on`: Define service startup order.
+  * `networks`: Which network(s) the service is attached to.
+Example:
+```yaml
 services:
   web:
-    image: nginx
+    build: ./web
     ports:
+      - "8080:80"
+    volumes:
+      - ./web:/var/www/html
+    depends_on:
+      - db
+
+  db:
+    image: mariadb:10.5
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+    volumes:
+      - db_data:/var/lib/mysql
+```
+#### 3. `volumes:`
+Defines named volumes that can be reused across services.
+```yaml
+volumes:
+  db_data:
+```
+#### 4. `networks:` (optional)
+Defines custom networks (bridge, host, or overlay).
+```yaml
+networks:
+  my_network:
+    driver: bridge
+```
+#### 5. Optional Extras
+  * `restart:`: Controls restart policy (`always`, `on-failure`, etc.).
+  * `command:`: Override the default command in the container.
+  * `entrypoint:`: Override the default entrypoint.
+  * `healthcheck:`: Define health check instructions.
+
+
+
+Example: A Full Setup<br>
+
+```yaml
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "443:443"
       - "80:80"
     volumes:
-      - ./conf/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf:/etc/nginx/conf.d
     depends_on:
-      - app
+      - wordpress
 
-  app:
-    image: myapp
+  wordpress:
+    image: wordpress:php8.2-fpm
     environment:
-      - APP_ENV=production
-```
-In this example:<br>
- * `web` and `app` are two services<br>
- * `web` uses NGINX and maps port 80<br>
- * `web` depends on `app`<br>
- * A configuration file is mounted into the `web` container<br>
- * `app` has an environment variable set<br>
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: root
+      WORDPRESS_DB_PASSWORD: example
+    volumes:
+      - wordpress_data:/var/www/html
+    depends_on:
+      - db
 
-### 3. How to use
+  db:
+    image: mariadb:10.5
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  wordpress_data:
+  db_data:
+```
+### 4. How to use
 You can start the entire application stack with a single command:<br>
 ```bash
 docker-compose up -d

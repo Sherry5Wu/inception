@@ -1,18 +1,27 @@
-FROM alpine:3.20.6
+#FROM debian:bookworm-slim
 
-RUN apk update && \
-	apk add --no-cache curl
+# Install necessary dependencies
+#RUN apt-get update && \
+#    apt-get install -y curl sudo bash && \
+#    rm -rf /var/lib/apt/lists/*
 
-RUN curl https://get.netdata.cloud/kickstart.sh > /tmp/netdata-kickstart.sh && \
-	sh /tmp/netdata-kickstart.sh --disable-telemetry && \
-	rm /tmp/netdata-kickstart.sh
+# Install Netdata with the official script
+#RUN curl -s https://my-netdata.io/kickstart.sh > /tmp/netdata-kickstart.sh && \
+#    bash /tmp/netdata-kickstart.sh --dont-wait --disable-telemetry && \
+#    rm /tmp/netdata-kickstart.sh
 
-# create the cloud configuration directory and file
-RUN mkdir -p /opt/netdata/var/lib/netdata/cloud.d && \
-echo "[cloud]" > /opt/netdata/var/lib/netdata/cloud.d/cloud.conf && \
-echo "  token = 'placeholder_cloud_token'" >> /opt/netdata/var/lib/netdata/cloud.d/cloud.conf
+# Expose Netdata's default port
+#EXPOSE 19999
+
+# Run Netdata in the foreground
+#ENTRYPOINT ["/opt/netdata/bin/netdata", "-D"]
+
+
+#version 2
+FROM netdata/netdata:stable
 
 EXPOSE 19999
 
-# run netdata in the foreground
-ENTRYPOINT [ "/opt/netdata/bin/netdata", "-D" ]
+
+#You can create a new Agent container with docker run or docker-compose, then access
+# the dashboard at http://NODE:19999.
