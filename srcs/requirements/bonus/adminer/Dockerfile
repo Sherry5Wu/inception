@@ -1,4 +1,4 @@
-FROM alpine:3.20.6
+FROM alpine:3.21.3
 
 # php81-session: for managing user logins and state across requests
 # php81-mysqli: allows Adminer to connect to MySQL databases

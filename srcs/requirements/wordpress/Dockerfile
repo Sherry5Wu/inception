@@ -1,4 +1,4 @@
-FROM alpine:3.20.6
+FROM alpine:3.21.3
 
 # 1. Install PHP and dependencies
 # "php81-fpm" FastCGI Process Manager for serving PHP

@@ -1,12 +1,21 @@
 services:
+  # Defines the nginx service. This name is how other services can reference it internally.
   nginx:
     build: requirements/nginx/.
+	# Names the resulting image as nginx. This is the local tag
 	image: nginx
+	# Gives the container a custom name (nginx) instead of a generated one.
+	# This makes it easier to refer to with Docker CLI commands.
 	container_name: nginx
+	# Maps port 443 on your host machine (left) to port 443 inside the container (right).
+	# Port 443 is used for HTTPS.
 	ports:
 	  - "443:443"
+	# Tells Docker to start the wordpress service before starting nginx. However,
+	# it doesn’t wait until WordPress is ready, just that it has started.
 	depends_on:
 	  - wordpress
+	# Mounts the named volume wp_data to /var/www/html inside the container
 	volumes:
 	  - wp_data:/var/www/html
 	env_file:
@@ -96,13 +105,18 @@ services:
 	  - inception
 	restart: always
 
-
+# "driver:":defines how Docker manages the volume — i.e., which backend or plugin
+# to use to create and mount the volume.
+  # "driver: local": is Docker’s default volume driver.It stores data on the local
+  # host's filesystem.
 volumes:
   db_data:
     driver: local
 	driver_opts:
 	  type: none
+	  # "Bind" tells Docker this is a bind mount — i.e., map a host folder.
 	  o: bind
+	  # The absolute path on the host machine to use as the actual volume storage.
 	  device: /home/jingwu/data/db_data
 
   wp_data:
@@ -115,4 +129,7 @@ volumes:
 
 networks:
   inception:
+    # bridge is the default network driver on Docker for Linux.
+	# It creates a private internal network on the host machine where containers
+	# can communicate with each other.
     driver: bridge
