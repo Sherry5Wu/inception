@@ -617,3 +617,79 @@ Common Forms of Parameter Expansion (with examples)
 | `${VAR:?error}`   | Show error and exit if `VAR` is unset or empty   | `: ${NAME:?Please set NAME}` |
 | `${VAR:+alt}`     | Use `alt` **only if** `VAR` is set and not empty | `echo ${NAME:+Set}`          |
 
+
+## VM
+I choose debian.
+
+### VM installation
+
+
+### VM config
+1. Update Your System
+```bash
+sudo apt update && sudo apt upgrade -y
+```
+2. Install Docker
+Docker isn't included by default in Debian's repositories with the latest version, so use the official Docker install script or manual setup.
+```bash
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+```
+3. Install Docker Compose
+The current Docker CLI includes Compose as a plugin (`docker compose` instead of `docker-compose`).
+To check:
+```bash
+docker compose version
+```
+If not present, install manually:
+```bash
+sudo apt install docker-compose-plugin
+```
+4. Enable Docker to Run Without sudo (Optional but useful)
+```bash
+sudo usermod -aG docker $USER
+newgrp docker
+```
+5. (Optional but Useful) Install Supporting Tools
+These are helpful during development and troubleshooting:
+```bash
+sudo apt install -y vim htop curl wget git openssl openssl-server net-tools
+```
+6. Configure DNS for Local Domain (e.g., `jingwu.42.fr`)
+If your project requires access via a local domain:
+  * Edit /etc/hosts on your host (or within VM if testing locally):
+  ```bash
+  127.0.0.1 jingwu.42.fr
+  ```
+7. sshd_config and ssh_config
+```bash
+sudo vim /etc/ssh/sshd_config
+```
+uncomment `port` and `PermitRootLogin`, change the `port` to `4241`, and `PermitRootLogin` to `no`.
+
+change port in ssh_config:
+```bash
+sudo vim /etc/ssh/ssh_config
+```
+uncomment `port`, and change it to `4241`.
+
+### Add port 4241 to VM
+
+
+
+
+### Copy the project to VM
+1. connect with vm
+```bash
+ssh localhost -p 4241
+```
+2. copy the project from physical machine to the vm
+```bash
+scp -P 4241 -r /home/jingwu/projects/inception jingwu@127.0.0.1:/home/jingwu
+```
+remember:<br>
+ - change the port "4241" to the one you use<br>
+ - change "/home/jingwu/projects/inception" to the local path of your project;<br>
+ - change the user name "jingwu" in "jingwu@127.0.0.1" to your vm username;<br>
+ - change "/home/jingwu" to the correct remote path;<br>
+

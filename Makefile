@@ -35,7 +35,7 @@ logs:
 clean: down
 	@if [ -d $(DATA_DIR) ]; then \
 		echo "Removing $(DATA_DIR)..."; \
-		sudo -rm -fr $(DATA_DIR); \
+		sudo rm -fr $(DATA_DIR); \
 	fi
 
 fclean: clean

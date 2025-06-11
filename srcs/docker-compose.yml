@@ -3,7 +3,7 @@ services:
   nginx:
     build: requirements/nginx/.
     # Names the resulting image as nginx. This is the local tag
-    image: nginx
+    image: nginx:inception
     # Gives the container a custom name (nginx) instead of a generated one.
     # This makes it easier to refer to with Docker CLI commands.
     container_name: nginx
@@ -15,6 +15,7 @@ services:
     # it doesn’t wait until WordPress is ready, just that it has started.
     depends_on:
       - wordpress
+      - mariadb
     # Mounts the named volume wp_data to /var/www/html inside the container
     volumes:
       - wp_data:/var/www/html
@@ -26,7 +27,7 @@ services:
 
   wordpress:
     build: requirements/wordpress/.
-    image: wordpress
+    image: wordpress:inception
     depends_on:
       - mariadb
     container_name: wordpress
@@ -40,7 +41,7 @@ services:
 
   mariadb:
     build: requirements/mariadb/.
-    image: mariadb
+    image: mariadb:inception
     container_name: mariadb
     volumes:
       - db_data:/var/lib/mysql
@@ -50,60 +51,60 @@ services:
       - inception
     restart: always
 
-  redis:
-    build: requirements/bonus/redis/.
-    image: redis
-    container_name: redis
-    networks:
-      - inception
-    restart: always
+  # redis:
+  #   build: requirements/bonus/redis/.
+  #   image: redis:inception
+  #   container_name: redis
+  #   networks:
+  #     - inception
+  #   restart: always
 
-  pure-ftpd:
-    build: requirements/bonus/pure-ftpd/.
-    image: pure-ftpd
-    container_name: pure-ftpd
-    depends_on:
-      - wordpress
-    ports:
-      - "21:21"
-      - "30000-30042:30000-30042"
-    volumes:
-      - wp-data:/home/ftpuser
-    env_file:
-      - .env
-    networks:
-      - inception
-    restart: always
+  # pure-ftpd:
+  #   build: requirements/bonus/pure-ftpd/.
+  #   image: pure-ftpd:inception
+  #   container_name: pure-ftpd
+  #   depends_on:
+  #     - wordpress
+  #   ports:
+  #     - "21:21"
+  #     - "30000-30042:30000-30042"
+  #   volumes:
+  #     - wp-data:/home/ftpuser
+  #   env_file:
+  #     - .env
+  #   networks:
+  #     - inception
+  #   restart: always
 
-  static-website:
-    build: requirements/bonus/static-website/.
-    image: static-website
-    container_name: static-website
-    ports:
-      - "8080:80"
-    networks:
-      - inception
-    restart: always
+  # static-website:
+  #   build: requirements/bonus/static-website/.
+  #   image: static-website:inception
+  #   container_name: static-website
+  #   ports:
+  #     - "8080:80"
+  #   networks:
+  #     - inception
+  #   restart: always
 
-  adminer:
-    build: requirements/bonus/adminer/.
-    image: adminer
-    container_name: adminer
-    ports:
-      - "8081:8080"
-    networks:
-      - inception
-    restart: always
+  # adminer:
+  #   build: requirements/bonus/adminer/.
+  #   image: adminer:inception
+  #   container_name: adminer
+  #   ports:
+  #     - "8081:8080"
+  #   networks:
+  #     - inception
+  #   restart: always
 
-  netdata:
-    build: requirements/bonus/netdata/.
-    image: netdata
-    container_name: netdata
-    ports:
-      - "8082:19999"
-    networks:
-      - inception
-    restart: always
+  # netdata:
+  #   build: requirements/bonus/netdata/.
+  #   image: netdata:inception
+  #   container_name: netdata
+  #   ports:
+  #     - "8082:19999"
+  #   networks:
+  #     - inception
+  #   restart: always
 
 # "driver:":defines how Docker manages the volume — i.e., which backend or plugin
 # to use to create and mount the volume.
@@ -112,19 +113,19 @@ services:
 volumes:
   db_data:
     driver: local
-  driver_opts:
-    type: none
-    # "Bind" tells Docker this is a bind mount — i.e., map a host folder.
-    o: bind
-    # The absolute path on the host machine to use as the actual volume storage.
-    device: /home/jingwu/data/db_data
+    driver_opts:
+      type: none
+      # "Bind" tells Docker this is a bind mount — i.e., map a host folder.
+      o: bind
+      # The absolute path on the host machine to use as the actual volume storage.
+      device: /home/jingwu/data/db_data
 
   wp_data:
     driver: local
-  driver_opts:
-    type: none
-    o: bind
-    device: /home/jingwu/data/wp_data
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/jingwu/data/wp_data
 
 
 networks:
