@@ -25,6 +25,8 @@ RUN set -eux; \
     chown -R mysql:mysql /var/lib/mysql /run/mysqld; \
     mariadb-install-db --user=mysql --datadir=/var/lib/mysql
 
+RUN mkdir -p /var/log/mysql && chown -R mysql:mysql /var/log/mysql
+
 # Copy a custom MariaDB configuration file into the container
 COPY ./conf/my-mariadb-server.cnf /etc/my.cnf.d/my-mariadb-server.cnf
 
