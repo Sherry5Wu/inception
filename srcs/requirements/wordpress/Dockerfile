@@ -1,24 +1,24 @@
 FROM alpine:3.21.3
 
 # 1. Install PHP and dependencies
-# "php81-fpm" FastCGI Process Manager for serving PHP
-# "php81-mysqli" MySQL/MariaDB database connectivity
-# "php81-phar" Needed for WP-CLI
-# "php81-tokenizer" Required for some plugins/themes
-# "php81-mbstring" Multibyte string support (used in i18n)
-# "php81-iconv" Character encoding conversion
+# "php-fpm" FastCGI Process Manager for serving PHP
+# "php-mysqli" MySQL/MariaDB database connectivity
+# "php-phar" Needed for WP-CLI
+# "php-tokenizer" Required for some plugins/themes
+# "php-mbstring" Multibyte string support (used in i18n)
+# "php-iconv" Character encoding conversion
 # "Mariadb-client"  is the command-line client for interacting with MariaDB or MySQL databases
 # 2. download and install WP-CLI
 # WP_CLI is a command-line tool for managing WordPress sites.
-RUN apk update && \
-	apk add --no-cache php81 php81-fpm php81-mysqli php81-phar \
-	php81-tokenizer php81-mbstring php81-iconv mariadb-client && \
-	wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
+RUN apk add --no-cache \
+    php php-fpm php-mysqli php-phar \
+    php-tokenizer php-mbstring php-iconv mariadb-client && \
+    wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
 	chmod +x wp-cli.phar && \
 	mv wp-cli.phar /usr/local/bin/wp
 
 # copy the configuration file
-COPY ./conf/www.conf /etc/php81/php-fpm.d/www.conf
+COPY ./conf/www.conf /etc/php/php-fpm.d/www.conf
 
 # Create PHP run directory
 # "-p" : stands for "parents", create all necessary parent directories if they
@@ -40,7 +40,7 @@ RUN mkdir -p /var/www/html && \
 	chown -R www-data:www-data /var/www/html
 
 # create a symlink that allows the command php to point to the php81 executable
-RUN ln -s /usr/bin/php81 /usr/bin/php
+# RUN ln -s /usr/bin/php81 /usr/bin/php
 
 # Copy entrypoint and make executable
 COPY ./tools/entrypoint.sh /usr/local/bin/entrypoint.sh

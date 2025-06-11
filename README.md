@@ -622,6 +622,9 @@ Common Forms of Parameter Expansion (with examples)
 I choose debian.
 
 ### VM installation
+1. Download the iso version of debian(https://www.debian.org/distrib/), I choosed "64-bit PC netinst iso" version.
+
+2. Open `Oracle Virtual Box Manager`......
 
 
 ### VM config
@@ -661,28 +664,44 @@ If your project requires access via a local domain:
   ```bash
   127.0.0.1 jingwu.42.fr
   ```
+![alt text](./images/change_localhost.png)
+
 7. sshd_config and ssh_config
+If you can't find `sshd_config` and `ssh_config`files in `ssh` folder, it means you haven't install `openssl` and `openssl-server` yet.<br>
+sshd_config:
 ```bash
 sudo vim /etc/ssh/sshd_config
 ```
 uncomment `port` and `PermitRootLogin`, change the `port` to `4241`, and `PermitRootLogin` to `no`.
+![alt text](./images/sshd_config.png)
 
-change port in ssh_config:
+ssh_config:
 ```bash
 sudo vim /etc/ssh/ssh_config
 ```
 uncomment `port`, and change it to `4241`.
+![alt text](./images/ssh_config.png)
+
+After the changes you can check if the ports have been changed successfully by below command:
+```bash
+systemctl status ssh | grep 4241
+```
+![alt text](./images/checking_port_setting.png_)
 
 ### Add port 4241 to VM
 
+1. In the VirtualBox Manager: Setting->Network, In "Adapter 1" set "Attached to" to "NAT"(it should be the default one). Click "Advanced" -> "Port Forwarding"
+![alt text](./images/VM_network_setting1.png)
 
-
+2. In "Port Forwarding Rules" page, click the add button on the top left, set the "Host Port" and "Guest Port" to 4241.
+![alt text](./images/VM_network_setting2.png)
 
 ### Copy the project to VM
 1. connect with vm
 ```bash
 ssh localhost -p 4241
 ```
+![alt text](./images/connect_VM.png)
 2. copy the project from physical machine to the vm
 ```bash
 scp -P 4241 -r /home/jingwu/projects/inception jingwu@127.0.0.1:/home/jingwu
@@ -693,3 +712,19 @@ remember:<br>
  - change the user name "jingwu" in "jingwu@127.0.0.1" to your vm username;<br>
  - change "/home/jingwu" to the correct remote path;<br>
 
+### some errors I met
+After "make", if you see the below error:
+![alt text](./images/make_error.png)
+
+Reason: This means your user (jingwu) does not have permission to use Docker directly.
+To fix it:
+1. switch to root
+```bash
+su -
+```
+2. run below command
+```bash
+usermod -aG docker jingwu
+```
+3. restart the VM
+4. After restart , using `groups` command to check if the `docker` listed.(should be listed)

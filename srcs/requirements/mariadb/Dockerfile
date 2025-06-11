@@ -21,12 +21,12 @@ RUN apk update && \
 # tables and files) using the mysql user
 # set -eux: this is for debugging.(see more explainatin in README.md)
 RUN set -eux; \
-    mkdir -p /run/mysqld  /var/lib/mysql; \
+    mkdir -p /run/mysqld /var/lib/mysql; \
     chown -R mysql:mysql /var/lib/mysql /run/mysqld; \
-    mysql_install_db --user=mysql -- datadir=/var/lib/mysql
+    mariadb-install-db --user=mysql --datadir=/var/lib/mysql
 
 # Copy a custom MariaDB configuration file into the container
-COPY ./conf/my_mariadb-server.cnf /etc/my.cnf.d/my-mariadb-server.cnf
+COPY ./conf/my-mariadb-server.cnf /etc/my.cnf.d/my-mariadb-server.cnf
 
 # Set read/write permission for the owner and read_only for others on the configuration
 RUN chmod 644 /etc/my.cnf.d/my-mariadb-server.cnf

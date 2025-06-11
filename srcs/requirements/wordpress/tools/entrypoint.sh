@@ -68,5 +68,5 @@ fi
 echo "Starting PHP-FPM..."
 
 # Starting PHP-FPM  in foreground mode
-exec php-fpm81 --nodaemonize
+exec php-fpm --nodaemonize
 

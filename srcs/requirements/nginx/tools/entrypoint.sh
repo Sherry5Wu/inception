@@ -31,7 +31,7 @@ if [ ! -f "$CERTS_" ] || [ ! -f "$CERTS_KEY_" ]; then
 	chmod 600 "$CERTS_KEY_"
 else
 	echo "Certificates exist. Skipping generation."
-if
+fi
 
 # Replace placeholders in the Nginx config
   # "sed" - is the stream editor used to modify files.
@@ -47,7 +47,9 @@ sed -i \
 	-e "s|\${CERTS_}|$CERTS_|g" \
 	-e "s|\${CERTS_KEY_}|$CERTS_KEY_|g" \
 	-e "s|\${DOMAIN_NAME}|$DOMAIN_NAME|g" \
-	/etc/nginx/http.d/default.conf
+	# /etc/nginx/http.d/default.conf
+  /etc/nginx/conf.d/default.conf
+
 
 # Start Nginx in foreground
 echo "Starting Nginx..."
