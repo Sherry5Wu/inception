@@ -9,6 +9,7 @@ COPY ./conf/nginx.conf /etc/nginx/nginx.conf
 
 # Copy entrypoint script
 COPY ./tools/entrypoint.sh /usr/local/bin/entrypoint.sh
+
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Expose HTTPS port

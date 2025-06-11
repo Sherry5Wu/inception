@@ -32,10 +32,22 @@ ps:
 logs:
 	@(DOCKER_COMPOSE) logs
 
-clean: down
+# clean: down
+# 	@if [ -d $(DATA_DIR) ]; then \
+# 		echo "Removing $(DATA_DIR)..."; \
+# 		sudo rm -fr $(DATA_DIR); \
+# 	fi
+
+clean:
+	@echo "Stopping and removing containers..."
+	@$(DOCKER_COMPOSE) down
+
+	@echo "Removing data directories in $(DATA_DIR)..."
 	@if [ -d $(DATA_DIR) ]; then \
-		echo "Removing $(DATA_DIR)..."; \
-		sudo rm -fr $(DATA_DIR); \
+		rm -rf $(DATA_DIR); \
+		echo "Removed $(DATA_DIR)"; \
+	else \
+		echo "$(DATA_DIR) does not exist. Skipping removal."; \
 	fi
 
 fclean: clean

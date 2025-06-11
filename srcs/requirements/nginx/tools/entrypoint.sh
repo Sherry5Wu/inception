@@ -47,9 +47,9 @@ sed -i \
 	-e "s|\${CERTS_}|$CERTS_|g" \
 	-e "s|\${CERTS_KEY_}|$CERTS_KEY_|g" \
 	-e "s|\${DOMAIN_NAME}|$DOMAIN_NAME|g" \
+  /etc/nginx/nginx.conf
+# /etc/nginx/conf.d/default.conf
 	# /etc/nginx/http.d/default.conf
-  /etc/nginx/conf.d/default.conf
-
 
 # Start Nginx in foreground
 echo "Starting Nginx..."

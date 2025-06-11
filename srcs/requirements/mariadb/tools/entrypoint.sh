@@ -13,7 +13,7 @@ mysqld &
 # Wait for MariaDB to start in a certain time
 # "mysqladmin" allows you to perform administrative operations on the database
 # server directly from the terminal.
-timeout = 60
+timeout=60
 while ! mysqladmin ping --silent; do
 	echo "Waiting for MariaDB to start..."
 	sleep 2;
