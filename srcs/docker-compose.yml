@@ -1,4 +1,16 @@
 services:
+  mariadb:
+    build: requirements/mariadb/.
+    image: mariadb:inception
+    container_name: mariadb
+    volumes:
+      - db_data:/var/lib/mysql
+    env_file:
+      - .env
+    networks:
+      - inception
+    restart: always
+
   # Defines the nginx service. This name is how other services can reference it internally.
   nginx:
     build: requirements/nginx/.
@@ -39,17 +51,37 @@ services:
       - inception
     restart: always
 
-  mariadb:
-    build: requirements/mariadb/.
-    image: mariadb:inception
-    container_name: mariadb
-    volumes:
-      - db_data:/var/lib/mysql
-    env_file:
-      - .env
-    networks:
-      - inception
-    restart: always
+
+
+# "driver:":defines how Docker manages the volume — i.e., which backend or plugin
+# to use to create and mount the volume.
+  # "driver: local": is Docker’s default volume driver.It stores data on the local
+  # host's filesystem.
+volumes:
+  db_data:
+    driver: local
+    driver_opts:
+      type: none
+      # "Bind" tells Docker this is a bind mount — i.e., map a host folder.
+      o: bind
+      # The absolute path on the host machine to use as the actual volume storage.
+      device: /home/jingwu/data/db_data
+
+  wp_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/jingwu/data/wp_data
+
+
+networks:
+  inception:
+    # bridge is the default network driver on Docker for Linux.
+  # It creates a private internal network on the host machine where containers
+  # can communicate with each other.
+    driver: bridge
+
 
   # redis:
   #   build: requirements/bonus/redis/.
@@ -105,32 +137,3 @@ services:
   #   networks:
   #     - inception
   #   restart: always
-
-# "driver:":defines how Docker manages the volume — i.e., which backend or plugin
-# to use to create and mount the volume.
-  # "driver: local": is Docker’s default volume driver.It stores data on the local
-  # host's filesystem.
-volumes:
-  db_data:
-    driver: local
-    driver_opts:
-      type: none
-      # "Bind" tells Docker this is a bind mount — i.e., map a host folder.
-      o: bind
-      # The absolute path on the host machine to use as the actual volume storage.
-      device: /home/jingwu/data/db_data
-
-  wp_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /home/jingwu/data/wp_data
-
-
-networks:
-  inception:
-    # bridge is the default network driver on Docker for Linux.
-  # It creates a private internal network on the host machine where containers
-  # can communicate with each other.
-    driver: bridge

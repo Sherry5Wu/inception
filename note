@@ -1,8 +1,0 @@
- Don't Forget: TLS/SSL Certificate Setup
-You’ll likely be using a self-signed certificate. You can create it with OpenSSL:
-
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
--keyout my.key -out my.crt
-
-
-Place these inside your nginx config directory and mount them in your container.

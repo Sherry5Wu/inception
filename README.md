@@ -689,7 +689,6 @@ systemctl status ssh | grep 4241
 ![alt text](./images/checking_port_setting.png_)
 
 ### Add port 4241 to VM
-
 1. In the VirtualBox Manager: Setting->Network, In "Adapter 1" set "Attached to" to "NAT"(it should be the default one). Click "Advanced" -> "Port Forwarding"
 ![alt text](./images/VM_network_setting1.png)
 
@@ -701,11 +700,13 @@ systemctl status ssh | grep 4241
 ```bash
 ssh localhost -p 4241
 ```
+Note: here is using lowercase 'p'.
 ![alt text](./images/connect_VM.png)
 2. copy the project from physical machine to the vm
 ```bash
 scp -P 4241 -r /home/jingwu/projects/inception jingwu@127.0.0.1:/home/jingwu
 ```
+Note: here is using uppercase 'P'.
 remember:<br>
  - change the port "4241" to the one you use<br>
  - change "/home/jingwu/projects/inception" to the local path of your project;<br>
@@ -728,3 +729,38 @@ usermod -aG docker jingwu
 ```
 3. restart the VM
 4. After restart , using `groups` command to check if the `docker` listed.(should be listed)
+
+### Some commands
+#### Add user to sudoers file
+Suggest to add the user you use into sudo file:
+```bash
+su -
+```
+After input the root password, then open `sudoers`
+```bash
+vim /etc/sudoers
+```
+At the `# User privilege specification` section added:
+```bash
+root ALL=(ALL:ALL) ALL
+jingwu ALL=(ALL:ALL) NOPASSWD: ALL
+```
+Change `jingwu` to your username.
+Then run the below command:
+```bash
+usermod -aG sudo jingwu
+```
+Again, change `jingwu` to your username.
+
+### Container debugging
+After successfully `make` the `Makefile`, we need to make sure all the containers are runnning successfully.
+1. Use `docker ps` to shows a list of running containers on your system.
+```bash
+docker ps
+```
+![alt text](./images/docker_ps.png)
+To make sure if each container runs correctly and successfully, we need to check logs of each container:
+```bash
+docker logs nginx
+```
+![alt text](./images/logs_nginx.png)

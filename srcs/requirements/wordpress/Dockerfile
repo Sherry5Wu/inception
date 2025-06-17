@@ -1,57 +1,26 @@
 FROM alpine:3.21.3
 
-# 1. Install PHP and dependencies
-# "php-fpm" FastCGI Process Manager for serving PHP
-# "php-mysqli" MySQL/MariaDB database connectivity
-# "php-phar" Needed for WP-CLI
-# "php-tokenizer" Required for some plugins/themes
-# "php-mbstring" Multibyte string support (used in i18n)
-# "php-iconv" Character encoding conversion
-# "Mariadb-client"  is the command-line client for interacting with MariaDB or MySQL databases
-# 2. download and install WP-CLI
-# WP_CLI is a command-line tool for managing WordPress sites.
-RUN apk add --no-cache \
-    php php-fpm php-mysqli php-phar \
-    php-tokenizer php-mbstring php-iconv mariadb-client && \
-    wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
-	chmod +x wp-cli.phar && \
-	mv wp-cli.phar /usr/local/bin/wp
+RUN apk update && \
+	apk add --no-cache \
+		bash curl mariadb-client \
+		php83 php83-fpm php83-mysqli php83-json php83-curl php83-dom \
+		php83-mbstring php83-openssl php83-xml php83-phar php83-session && \
+	addgroup -S www-data || true && \
+	adduser -S -G www-data www-data || true && \
+	mkdir -p /var/www/html && \
+	chown -R www-data:www-data /var/www/html && \
+	chmod -R 755 /var/www/html
 
-# copy the configuration file
-COPY ./conf/www.conf /etc/php/php-fpm.d/www.conf
-
-# Create PHP run directory
-# "-p" : stands for "parents", create all necessary parent directories if they
-# don’t already exist
-RUN mkdir -p /run/php
-
-# Create a system user www-data and assign it to the group www-data
-# which is commonly used for web services
-RUN adduser  -S www-data -G www-data
-
-# Set working directory for WordPress and adjust permissions
-# Ensure that the www-data user has appropriate permissions to work in /var/www/html
-# if WordPress files will be written there during runtime.
-# "-R":  stands for "recursive".It tells chown to apply the ownership change to all
-# files and subdirectories inside /var/www/html
-# syntax for chown: chown [option] user:group file
 WORKDIR /var/www/html
-RUN mkdir -p /var/www/html && \
-	chown -R www-data:www-data /var/www/html
 
-# create a symlink that allows the command php to point to the php81 executable
-# RUN ln -s /usr/bin/php81 /usr/bin/php
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
+	chmod +x wp-cli.phar
 
-# Copy entrypoint and make executable
-COPY ./tools/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+COPY conf/www.conf /etc/php83/php-fpm.d/
+COPY tools/entrypoint.sh /usr/local/bin/
 
-#expose the port PHP-FPM will listen on
-# 9000 is the default port used by PHP-FPM
-EXPOSE 9000
+RUN chmod +x /usr/local/bin/entrypoint.sh && \
+	sed -i '/^memory_limit\s*=/c\memory_limit = 512M' /etc/php83/php.ini || \
+	echo "memory_limit = 512M" >> /etc/php83/php.ini
 
-# Switch to non-root user for runtime
-USER www-data
-
-# Use absolute path for entrypoint
-ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

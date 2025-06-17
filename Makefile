@@ -44,7 +44,7 @@ clean:
 
 	@echo "Removing data directories in $(DATA_DIR)..."
 	@if [ -d $(DATA_DIR) ]; then \
-		rm -rf $(DATA_DIR); \
+		sudo rm -rf $(DATA_DIR); \
 		echo "Removed $(DATA_DIR)"; \
 	else \
 		echo "$(DATA_DIR) does not exist. Skipping removal."; \
