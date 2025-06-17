@@ -759,8 +759,31 @@ After successfully `make` the `Makefile`, we need to make sure all the container
 docker ps
 ```
 ![alt text](./images/docker_ps.png)
-To make sure if each container runs correctly and successfully, we need to check logs of each container:
+
+2. To make sure if each container runs correctly and successfully, we need to check logs of each container:
 ```bash
 docker logs nginx
 ```
 ![alt text](./images/logs_nginx.png)
+```bash
+docker logs mariadb
+```
+![alt text](./images/mariadb_logs.png)
+
+```bash
+docker logs wordpress
+```
+![alt text](./images/wordpress_logs.png)
+
+If all the containers are up, and each container's log are no errors, then it means all the containers are running successfully.
+
+### View the website
+
+#### wordpress frontend
+Frontend's address is `https://jingwu.42.fr`, remember to change `jingwu` to your login name.
+![alt text](./images/wordpress_frontend.png)
+
+#### wordpress admin page
+
+Address`https://jingwu.42.fr/wp-admin`, you can use the admin user you setted in'.env' file to login.
+![alt text](./images/wp-admin_login.png)

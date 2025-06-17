@@ -1,24 +1,25 @@
 [mysqld]
 
 # * Basic Settings
-user                    = mysql
-pid-file                = /var/run/mysqld/mysqld.pid
-basedir                 = /usr
-datadir                 = /var/lib/mysql
-tmpdir                  = /tmp
-lc-messages-dir         = /usr/share/mysql
-lc-messages             = en_US
-skip-external-locking
+user                    = mysql                          # The system user that the MariaDB server process runs as
+pid-file                = /var/run/mysqld/mysqld.pid     # Location of the server's PID file (process ID file)
+basedir                 = /usr                           # Base directory where MariaDB is installed
+datadir                 = /var/lib/mysql                 # Directory where the database files are stored
+tmpdir                  = /tmp                           # Directory for temporary files created during queries
+lc-messages-dir         = /usr/share/mysql               # Directory containing language files for error messages
+lc-messages             = en_US                          # Language/locale for error messages
+skip-external-locking                                      # Disable external locking to improve performance
 
-bind-address            = 0.0.0.0
-skip-grant-tables       = 0
+# * Network Settings
+bind-address            = 0.0.0.0                        # Listen on all network interfaces (accept connections from any IP)
+skip-grant-tables       = 0                              # Enable grant tables; 0 means normal authentication is enforced
 
 # * Character sets
-character-set-server  = utf8mb4
-collation-server      = utf8mb4_general_ci
+character-set-server     = utf8mb4                       # Default server character set (supports full Unicode, emojis)
+collation-server         = utf8mb4_general_ci            # Default server collation (text sorting rules)
 
-# * InnoDB
-innodb_buffer_pool_size = 1G
+# * InnoDB Engine
+innodb_buffer_pool_size  = 1G                            # Size of the InnoDB buffer pool (cache for data and indexes)
 
-log_error = /var/log/mysql/error.log
-
+# * Logging
+log_error                = /var/log/mysql/error.log      # Location of the error log file
