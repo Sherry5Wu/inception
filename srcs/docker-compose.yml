@@ -114,6 +114,16 @@ services:
       - inception
     restart: always
 
+  netdata:
+    build: requirements/bonus/netdata/.
+    image: netdata:inception
+    container_name: netdata
+    ports:
+      - "8082:19999"
+    networks:
+      - inception
+    restart: always
+
 # "driver:":defines how Docker manages the volume — i.e., which backend or plugin
 # to use to create and mount the volume.
   # "driver: local": is Docker’s default volume driver.It stores data on the local
@@ -149,14 +159,3 @@ networks:
   # It creates a private internal network on the host machine where containers
   # can communicate with each other.
     driver: bridge
-
-
-  # netdata:
-  #   build: requirements/bonus/netdata/.
-  #   image: netdata:inception
-  #   container_name: netdata
-  #   ports:
-  #     - "8082:19999"
-  #   networks:
-  #     - inception
-  #   restart: always

@@ -808,3 +808,7 @@ ftp localhost
 curl -I http://localhost:8080
 ```
 And visite the website using 'http://localhost:8080'
+
+### Netdata
+
+Website 'http://localhost:8082'
