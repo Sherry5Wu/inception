@@ -82,6 +82,28 @@ services:
       start_period: 5s
     restart: always
 
+  pure-ftpd:
+    build: requirements/bonus/pure-ftpd/.
+    image: pure-ftpd:inception
+    container_name: pure-ftpd
+    depends_on:
+      - wordpress
+    ports:
+      - "21:21"
+      - "30000-30042:30000-30042"
+    volumes:
+      - wp_data:/home/ftpuser
+    env_file:
+      - .env
+    networks:
+      - inception
+    healthcheck:
+      test: ["CMD", "pgrep", "pure-ftpd"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: always
+
 # "driver:":defines how Docker manages the volume — i.e., which backend or plugin
 # to use to create and mount the volume.
   # "driver: local": is Docker’s default volume driver.It stores data on the local
@@ -121,22 +143,7 @@ networks:
 
 
 
-  # pure-ftpd:
-  #   build: requirements/bonus/pure-ftpd/.
-  #   image: pure-ftpd:inception
-  #   container_name: pure-ftpd
-  #   depends_on:
-  #     - wordpress
-  #   ports:
-  #     - "21:21"
-  #     - "30000-30042:30000-30042"
-  #   volumes:
-  #     - wp-data:/home/ftpuser
-  #   env_file:
-  #     - .env
-  #   networks:
-  #     - inception
-  #   restart: always
+
 
   # static-website:
   #   build: requirements/bonus/static-website/.

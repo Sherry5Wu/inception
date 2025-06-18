@@ -791,3 +791,14 @@ Address`https://jingwu.42.fr/wp-admin`, you can use the admin user you setted in
 ### Checking if Redis works
 docker exec -it redis redis-cli -a <your_redis_password> set testkey "hello"
 docker exec -it redis redis-cli -a <your_redis_password> get testkey
+
+
+### pure-ftpd
+
+Next testing steps
+After docker-compose up:
+1️⃣ Try connecting via an FTP client:
+```bash
+ftp localhost
+```
+s
