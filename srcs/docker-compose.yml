@@ -104,6 +104,16 @@ services:
       retries: 3
     restart: always
 
+  static-website:
+    build: requirements/bonus/static-website/.
+    image: static-website:inception
+    container_name: static-website
+    ports:
+      - "8080:80"
+    networks:
+      - inception
+    restart: always
+
 # "driver:":defines how Docker manages the volume — i.e., which backend or plugin
 # to use to create and mount the volume.
   # "driver: local": is Docker’s default volume driver.It stores data on the local
@@ -140,20 +150,6 @@ networks:
   # can communicate with each other.
     driver: bridge
 
-
-
-
-
-
-  # static-website:
-  #   build: requirements/bonus/static-website/.
-  #   image: static-website:inception
-  #   container_name: static-website
-  #   ports:
-  #     - "8080:80"
-  #   networks:
-  #     - inception
-  #   restart: always
 
   # netdata:
   #   build: requirements/bonus/netdata/.

@@ -801,4 +801,10 @@ After docker-compose up:
 ```bash
 ftp localhost
 ```
-s
+
+### Static-website
+
+```bash
+curl -I http://localhost:8080
+```
+And visite the website using 'http://localhost:8080'
