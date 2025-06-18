@@ -2,6 +2,7 @@ DOCKER_COMPOSE_FILE := ./srcs/docker-compose.yml
 DATA_DIR := /home/jingwu/data
 DB_DATA_DIR := $(DATA_DIR)/db_data
 WP_DATA_DIR := $(DATA_DIR)/wp_data
+REDIS_DATA_DIR := $(DATA_DIR)/redis_data
 DOCKER_COMPOSE := docker compose -f $(DOCKER_COMPOSE_FILE)
 
 all: up
@@ -15,6 +16,11 @@ up:
 	@if [ ! -d $(WP_DATA_DIR) ]; then \
 		mkdir -p $(WP_DATA_DIR); \
 		echo "Created $(WP_DATA_DIR)"; \
+	fi
+
+	@if [ ! -d $(REDIS_DATA_DIR) ]; then \
+		mkdir -p $(REDIS_DATA_DIR); \
+		echo "Created $(REDIS_DATA_DIR)"; \
 	fi
 
 # "-d" detached mode(runs in backgroud)

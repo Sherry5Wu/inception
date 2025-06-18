@@ -787,3 +787,7 @@ Frontend's address is `https://jingwu.42.fr`, remember to change `jingwu` to you
 
 Address`https://jingwu.42.fr/wp-admin`, you can use the admin user you setted in'.env' file to login.
 ![alt text](./images/wp-admin_login.png)
+
+### Checking if Redis works
+docker exec -it redis redis-cli -a <your_redis_password> set testkey "hello"
+docker exec -it redis redis-cli -a <your_redis_password> get testkey
