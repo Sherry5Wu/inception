@@ -619,7 +619,7 @@ Common Forms of Parameter Expansion (with examples)
 
 
 ## VM
-I choose debian.
+I installed debian.
 
 ### VM installation
 1. Download the iso version of debian(https://www.debian.org/distrib/), I choosed "64-bit PC netinst iso" version.
@@ -731,7 +731,7 @@ usermod -aG docker jingwu
 4. After restart , using `groups` command to check if the `docker` listed.(should be listed)
 
 ### Some commands
-#### Add user to sudoers file
+#### Add user to sudoers file![alt text](image.png)
 Suggest to add the user you use into sudo file:
 ```bash
 su -
@@ -808,6 +808,8 @@ SHOW TABLES;
 ```bash
 USE wordpress_db;
 ```
+![alt text](./images/use-db.png)
+
 6. Checking the user table, there should have two users we created
 ```bash
 select * from wp_users;
@@ -815,9 +817,15 @@ select * from wp_users;
 ![alt text](./images/users.png)
 
 ### Checking if Redis works
+```bash
 docker exec -it redis redis-cli -a <your_redis_password> set testkey "hello"
-docker exec -it redis redis-cli -a <your_redis_password> get testkey
+```
+![alt text](./images/redis-set.png)
 
+```bash
+docker exec -it redis redis-cli -a <your_redis_password> get testkey
+```
+![alt text](./images/redis-get.png)
 
 ### pure-ftpd
 
@@ -840,6 +848,7 @@ And visite the website using 'http://localhost:8080'
 ### Netdata
 
 Website 'http://localhost:8082'
+![alt text](./images/netdata.png)
 
 ## Concepts
 
