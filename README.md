@@ -777,7 +777,7 @@ docker logs wordpress
 
 If all the containers are up, and each container's log are no errors, then it means all the containers are running successfully.
 
-### View the website
+### Wordpress website
 
 #### wordpress frontend
 Frontend's address is `https://jingwu.42.fr`, remember to change `jingwu` to your login name.
@@ -787,6 +787,24 @@ Frontend's address is `https://jingwu.42.fr`, remember to change `jingwu` to you
 
 Address`https://jingwu.42.fr/wp-admin`, you can use the admin user you setted in'.env' file to login.
 ![alt text](./images/wp-admin_login.png)
+
+### Entry mariadb
+1. Get into the mariadb container
+```bash
+docker exec -t mariadb mariadb
+```
+2. Show the database
+```bash
+SHOW DATABASES
+```
+3. Get into wordpress database
+```bash
+USE wordpress_db
+```
+4. Checking the user table, there should have two users we created
+```bash
+select * from wp_users
+```
 
 ### Checking if Redis works
 docker exec -it redis redis-cli -a <your_redis_password> set testkey "hello"
@@ -812,3 +830,88 @@ And visite the website using 'http://localhost:8080'
 ### Netdata
 
 Website 'http://localhost:8082'
+
+## Concepts
+
+### How Docker and docker compose work
+#### Docker
+Docker is a tool that packages your app together with everything it needs to run — like the code, libraries, and settings — into a container.<br>
+✅ Think of a container like a lunchbox.<br>
+Inside the lunchbox, you have everything your meal (app) needs — no matter where you open it, it works the same.<br>
+So whether you’re on your laptop, your colleague’s PC, or a cloud server — the app runs the same way.<br>
+
+⚙️ How does Docker work?<br>
+1️⃣ You write instructions (a Dockerfile) that describe:<br>
+  * What base system to use (e.g., Debian, Alpine)<br>
+  * What files to copy<br>
+  * What commands to run<br>
+2️⃣ Docker builds an image from that file (a kind of app snapshot).<br>
+3️⃣ You tell Docker to run the image → it creates a container and your app runs inside it.<br>
+
+#### Docker compose
+Docker Compose helps you run multiple containers at once, and connect them easily.<br>
+Think of Compose like a kitchen recipe for a whole meal — not just the lunchbox for one dish.<br>
+It tells Docker:<br>
+  * Start the web app container<br>
+  * Start the database container<br>
+  * Link them together<br>
+  * Open port 8080 so I can access it<br>
+You write these instructions in a simple YAML file (usually docker-compose.yml).<br>
+
+### The difference between a Docker image used with docker compose and without docker compose?
+When using the image without docker compose, you run the image manually, you do something like:<br>
+```bash
+docker build -t myapp .
+docker run -p 8080:80 myapp
+```
+You are:<br>
+  * Starting a single container at a time.<br>
+  * Manually managing options (e.g. ports, volumes, env vars).<br>
+  * If you have multiple services (e.g. app + db), you must start and network them yourself.<br>
+
+If you using the image with docker compose, you:
+  * Still use the exact same image (or build the same one from the Dockerfile).<br>
+  * But you define how to run it in a docker-compose.yml file.<br>
+Compose:
+  * Automatically sets up networking (so web can reach db by name).<br>
+  * Manages multiple containers as one unit.<br>
+  * Makes it easy to start/stop/rebuild all containers (docker-compose up, down).<br>
+
+Docker vs Docker Compose: commands to build, run, and stop<br>
+| Action             | 🐳 **Docker (single container)**     | 🧩 **Docker Compose (multi-container)**                                                                                                                  |
+| ------------------ | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Build image**    | `docker build -t myapp .`            | `docker compose build` <br>*(if using `build:` in YAML)*                                                                                                 |
+| **Run container**  | `docker run -d -p 8080:80 myapp`     | `docker compose up` <br>or<br> `docker-compose up -d` *(for detached mode)*                                                                              |
+| **Stop container** | `docker stop <container_name_or_id>` | `docker compose stop` *(stops containers but keeps network/volumes)* <br> `docker compose down` *(stops + removes containers, network, default volumes)* |
+
+### The benefit of Docker compared to VMs
+ core difference:<br>
+  * VMs (Virtual Machines) virtualize entire computers — each VM runs its own OS + kernel + apps.<br>
+  * Docker (containers) virtualizes at the app level — containers share the host OS kernel but isolate the app environment.<br>
+
+Why Docker shines<br>
+  * Speed: You can spin up a container in seconds → great for CI, testing, microservices.<br>
+  * Density: You can run 10s or 100s of containers where you might run a few VMs.<br>
+  * Dev → Prod consistency: Containers ensure “works on my machine” = “works in prod”.<br>
+  * Easy orchestration: Tools like Docker Compose, Swarm, Kubernetes.<br>
+
+When VMs still make sense, if you need:<br>
+  * Full OS isolation (e.g., for untrusted workloads)<br>
+  * Different kernel versions<br>
+  * Legacy OSes<br>
+
+#### What is Docker Network
+A Docker network is how containers talk to:<br>
+  * each other (container-to-container communication)<br>
+  * the outside world (internet or your machine)<br>
+You can think of it as the virtual bridge or switch that connects your containers.<br>
+
+Types of Docker networks (simple view):<br>
+| Network type    | What it means                                                                                                |
+| --------------- | ------------------------------------------------------------------------------------------------------------ |
+| `bridge`        | Default for single-host Docker. Containers connect via a private network and can talk using container names. |
+| `host`          | Container shares the host’s network (no isolation).                                                          |
+| `none`          | No network. The container is fully isolated.                                                                 |
+| `custom bridge` | Like `bridge` but created by you → lets containers talk using names and gives more control.                  |
+
+Related commands: `docker network ls` and `docker network inspect`<br>
