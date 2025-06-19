@@ -793,18 +793,26 @@ Address`https://jingwu.42.fr/wp-admin`, you can use the admin user you setted in
 ```bash
 docker exec -t mariadb mariadb
 ```
+![alt text](./images/get-into-mariadb.png)
 2. Show the database
 ```bash
-SHOW DATABASES
+SHOW DATABASES;
 ```
-3. Get into wordpress database
+![alt text](./images/show-database.png)
+4. Show the tables
 ```bash
-USE wordpress_db
+SHOW TABLES;
 ```
-4. Checking the user table, there should have two users we created
+![alt text](./images/show-tables.png)
+5. Get into wordpress database
 ```bash
-select * from wp_users
+USE wordpress_db;
 ```
+6. Checking the user table, there should have two users we created
+```bash
+select * from wp_users;
+```
+![alt text](./images/users.png)
 
 ### Checking if Redis works
 docker exec -it redis redis-cli -a <your_redis_password> set testkey "hello"
@@ -819,13 +827,15 @@ After docker-compose up:
 ```bash
 ftp localhost
 ```
-
+![alt text](./images/ftp.png)
 ### Static-website
 
 ```bash
 curl -I http://localhost:8080
 ```
+![alt text](./images/static-website-1.png)
 And visite the website using 'http://localhost:8080'
+![alt text](./images/static-website-2.png)
 
 ### Netdata
 
